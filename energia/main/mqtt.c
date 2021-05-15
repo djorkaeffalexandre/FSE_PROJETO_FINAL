@@ -26,13 +26,18 @@
 
 #define TAG "MQTT"
 
-#define TYPE "ENERGY"
 #define NAME_LEN 30
 
 #define REGISTER "REGISTER"
 #define SET_OUTPUT "SET_OUTPUT"
 
 #define PUSH_TICK 2000
+
+#ifdef CONFIG_ESP_MODEL_TYPE_BATTERY
+#define TYPE "BATTERY"
+#else
+#define TYPE "ENERGY"
+#endif
 
 #define STUDENT_ID CONFIG_ESP_STUDENT_ID
 
@@ -67,7 +72,7 @@ char *get_topic_for(char *option)
 {
     int topic_size = 64;
     char *topic = malloc(topic_size);
-    snprintf(topic, topic_size, "fse2020/%s/%s/%s", STUDENT_ID, _name, option);
+    snprintf(topic, topic_size, "fse2020/%d/%s/%s", STUDENT_ID, _name, option);
     return topic;
 }
 
@@ -161,7 +166,7 @@ void mqtt_register_with(char *name)
     xSemaphoreGive(registerHandler_semaphore);
 
     char topic[64];
-    snprintf(topic, 64, "fse2020/%s/dispositivos/%s", STUDENT_ID, mac_address());
+    snprintf(topic, 64, "fse2020/%d/dispositivos/%s", STUDENT_ID, mac_address());
     mqtt_receive_message(topic);
 }
 
@@ -182,7 +187,7 @@ void mqtt_register()
     char *json = cJSON_Print(data);
 
     char topic[64];
-    snprintf(topic, 64, "fse2020/%s/dispositivos/%s", STUDENT_ID, mac_address());
+    snprintf(topic, 64, "fse2020/%d/dispositivos/%s", STUDENT_ID, mac_address());
 
     mqtt_send_message(topic, json);
     mqtt_receive_message(topic);

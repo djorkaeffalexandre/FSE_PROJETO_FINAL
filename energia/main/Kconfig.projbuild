@@ -13,9 +13,19 @@ menu "Wifi Configuration"
 endmenu
 
 menu "FSE Configuration"
+  choice ESP_MODEL_TYPE
+    prompt "Modo de alimentação da ESP"
+    default ESP_MODEL_TYPE_ENERGY
+    config ESP_MODEL_TYPE_ENERGY
+      bool "ENERGY"
+    config ESP_MODEL_TYPE_BATTERY
+      bool "BATTERY"
+    help
+      Configuração do modo de alimentação da ESP.
+  endchoice
   config ESP_STUDENT_ID
-    string "Matrícula do estudante"
-    default "matricula"
+    int "Matrícula do estudante"
+    default 000000000
     help
       Matricula do estudante.
 endmenu
