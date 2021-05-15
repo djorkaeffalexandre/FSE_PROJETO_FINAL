@@ -50,7 +50,9 @@ void registerSystem()
 
 void app_main(void)
 {
+  #ifdef CONFIG_ESP_MODEL_TYPE_ENERGY
   DHT11_init(GPIO_NUM_4);
+  #endif
 
   nvs_start();
     
@@ -63,5 +65,7 @@ void app_main(void)
 
   registerSystem();
 
+  #ifdef CONFIG_ESP_MODEL_TYPE_ENERGY
   xTaskCreate(&mqtt_publish_dht11, "Handler of DHT11", 2048, NULL, 1, NULL);
+  #endif
 }

@@ -62,7 +62,11 @@ void gpio_start()
 {
   State state;
   state.input = gpio_get_level(INPUT);
+  #ifdef CONFIG_ESP_MODEL_TYPE_ENERGY
   state.output = gpio_get_level(OUTPUT);
+  #else
+  state.output = 0;
+  #endif
   _state = state;
 
   gpio_pad_select_gpio(INPUT);
@@ -94,11 +98,13 @@ void gpio_toggle(State state)
     return;
   }
   
+  #ifdef CONFIG_ESP_MODEL_TYPE_ENERGY
   if (_state.output != state.output) {
     gpio_pad_select_gpio(OUTPUT);
     gpio_set_direction(OUTPUT, GPIO_MODE_OUTPUT);
     gpio_set_level(OUTPUT, state.output);
   }
+  #endif
 
   _state = state;
 

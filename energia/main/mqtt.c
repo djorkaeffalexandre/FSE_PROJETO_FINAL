@@ -93,11 +93,14 @@ void mqtt_handle_data(int length, char *data)
         nvs_save_string("name", _name);
         xSemaphoreGive(registerHandler_semaphore);
     }
+    
+    #ifdef CONFIG_ESP_MODEL_TYPE_ENERGY
     if (strcmp(type, SET_OUTPUT) == 0) {
         State state = gpio_current_state();
         state.output = !state.output;
         gpio_toggle(state);
     }
+    #endif
 }
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
