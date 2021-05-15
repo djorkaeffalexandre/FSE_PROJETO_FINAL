@@ -1,29 +1,51 @@
 #include <stdio.h>
+#include "nvs_flash.h"
+#include "esp_wifi.h"
+#include "esp_event.h"
+#include "esp_http_client.h"
 #include "esp_log.h"
-#include "sdkconfig.h"
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
-#include "driver/gpio.h"
+#include "nvs_flash.h"
+#include "freertos/semphr.h"
 
-#include "dht11.h"
+#include "wifi.h"
+#include "mqtt.h"
 
-#define LED 2
+xSemaphoreHandle wifiConnect_semaphore;
+xSemaphoreHandle mqttConnect_semaphore;
+
+void wifiConnect(void *params)
+{
+  while(true)
+  {
+    if(xSemaphoreTake(wifiConnect_semaphore, portMAX_DELAY))
+    {
+      mqtt_start();
+    }
+  }
+}
+
+void registerSystem()
+{
+  if (xSemaphoreTake(mqttConnect_semaphore, portMAX_DELAY))
+  {
+    mqtt_register();
+  }
+}
 
 void app_main(void)
 {
-  DHT11_init(GPIO_NUM_4);
-  gpio_pad_select_gpio(LED);
-  gpio_set_direction(LED, GPIO_MODE_OUTPUT);
-  
-  int state = 0;
-
-  while (1)
-  {
-    printf("Temperature is %d \n", DHT11_read().temperature);
-    printf("Humidity is %d\n", DHT11_read().humidity);
-    printf("Status code is %d\n", DHT11_read().status);
-    gpio_set_level(LED, state);
-    vTaskDelay(3000 / portTICK_PERIOD_MS);
-    state = !state;
+  esp_err_t ret = nvs_flash_init();
+  if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+    ESP_ERROR_CHECK(nvs_flash_erase());
+    ret = nvs_flash_init();
   }
+  ESP_ERROR_CHECK(ret);
+    
+  wifiConnect_semaphore = xSemaphoreCreateBinary();
+  mqttConnect_semaphore = xSemaphoreCreateBinary();
+
+  wifi_start();
+  xTaskCreate(&wifiConnect, "Handler of WiFi", 4096, NULL, 1, NULL);
+
+  registerSystem();
 }
