@@ -20,6 +20,7 @@
 #include "mqtt_client.h"
 
 #include "mqtt.h"
+#include "gpio.h"
 
 #define TAG "MQTT"
 
@@ -28,6 +29,8 @@
 
 #define REGISTER "REGISTER"
 #define SET_OUTPUT "SET_OUTPUT"
+
+#define STUDENT_ID "160026822"
 
 extern xSemaphoreHandle mqttConnect_semaphore;
 extern xSemaphoreHandle registerHandler_semaphore;
@@ -56,11 +59,11 @@ char* mac_address()
     return mac;
 }
 
-char *get_topic()
+char *get_state_topic()
 {
     int topic_size = 64;
     char *topic = malloc(topic_size);
-    snprintf(topic, topic_size, "fse2020/%s/%s/estado", "160026822", _name);
+    snprintf(topic, topic_size, "fse2020/%s/%s/estado", STUDENT_ID, _name);
     return topic;
 }
 
@@ -81,7 +84,9 @@ void mqtt_handle_data(int length, char *data)
         xSemaphoreGive(registerHandler_semaphore);
     }
     if (strcmp(type, SET_OUTPUT) == 0) {
-
+        State state = gpio_current_state();
+        state.output = !state.output;
+        gpio_toggle(state);
     }
 }
 
@@ -161,13 +166,13 @@ void mqtt_register()
     char *json = cJSON_Print(data);
 
     char topic[64];
-    snprintf(topic, 64, "fse2020/%s/dispositivos/%s", "160026822", mac_address());
+    snprintf(topic, 64, "fse2020/%s/dispositivos/%s", STUDENT_ID, mac_address());
 
     mqtt_send_message(topic, json);
     mqtt_receive_message(topic);
 }
 
-void mqtt_publish()
+void mqtt_publish_state(State state)
 {
     /*
     {
@@ -179,10 +184,15 @@ void mqtt_publish()
     cJSON *data = cJSON_CreateObject();
 
     cJSON_AddStringToObject(data, "mac", mac_address());
-    cJSON_AddNumberToObject(data, "output", 1);
-    cJSON_AddNumberToObject(data, "input", 0);
+    cJSON_AddNumberToObject(data, "output", state.output);
+    cJSON_AddNumberToObject(data, "input", !state.input);
 
     char *json = cJSON_Print(data);
 
-    mqtt_send_message(get_topic(), json);
+    mqtt_send_message(get_state_topic(), json);
+}
+
+void mqtt_publish_dht11()
+{
+    
 }

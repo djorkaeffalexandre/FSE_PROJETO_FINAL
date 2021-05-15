@@ -33,7 +33,7 @@ void registerSystem()
 
     if (xSemaphoreTake(registerHandler_semaphore, portMAX_DELAY))
     {
-      
+      gpio_start();
     }
   }
 }
