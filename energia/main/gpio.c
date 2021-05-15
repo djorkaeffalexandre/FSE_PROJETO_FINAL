@@ -100,5 +100,5 @@ void gpio_toggle(State state)
 
   _state = state;
 
-  mqtt_publish(_state);
+  mqtt_publish_state(_state);
 }

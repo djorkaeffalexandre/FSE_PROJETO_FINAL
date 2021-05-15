@@ -30,7 +30,7 @@
 #define REGISTER "REGISTER"
 #define SET_OUTPUT "SET_OUTPUT"
 
-#define STUDENT_ID "160026822"
+#define STUDENT_ID CONFIG_ESP_STUDENT_ID
 
 extern xSemaphoreHandle mqttConnect_semaphore;
 extern xSemaphoreHandle registerHandler_semaphore;

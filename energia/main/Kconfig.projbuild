@@ -11,3 +11,11 @@ menu "Wifi Configuration"
     help
       Senha do WiFi (WPA or WPA2).
 endmenu
+
+menu "FSE Configuration"
+  config ESP_STUDENT_ID
+    string "Matrícula do estudante"
+    default "matricula"
+    help
+      Matricula do estudante.
+endmenu
