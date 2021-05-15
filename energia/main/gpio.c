@@ -78,6 +78,8 @@ void gpio_start()
   gpio_install_isr_service(0);
   gpio_isr_handler_add(INPUT, gpio_isr_handler, (void *)INPUT);
 
+  mqtt_publish_state(_state);
+  
   _started = 1;
 }
 
