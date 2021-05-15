@@ -63,5 +63,5 @@ void app_main(void)
 
   registerSystem();
 
-  xTaskCreate(&mqtt_publish_dht11, "Handler of DHT11", 4096, NULL, 1, NULL);
+  xTaskCreate(&mqtt_publish_dht11, "Handler of DHT11", 2048, NULL, 1, NULL);
 }

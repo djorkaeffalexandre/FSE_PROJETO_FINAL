@@ -32,7 +32,7 @@
 #define REGISTER "REGISTER"
 #define SET_OUTPUT "SET_OUTPUT"
 
-#define PUSH_TICK 20000
+#define PUSH_TICK 2000
 
 #define STUDENT_ID CONFIG_ESP_STUDENT_ID
 
@@ -159,6 +159,10 @@ void mqtt_register_with(char *name)
     strcpy(_name, name);
     nvs_save_string("name", _name);
     xSemaphoreGive(registerHandler_semaphore);
+
+    char topic[64];
+    snprintf(topic, 64, "fse2020/%s/dispositivos/%s", STUDENT_ID, mac_address());
+    mqtt_receive_message(topic);
 }
 
 void mqtt_register()
