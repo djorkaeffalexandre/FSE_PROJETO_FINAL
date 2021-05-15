@@ -10,6 +10,7 @@
 #include "wifi.h"
 #include "mqtt.h"
 #include "dht11.h"
+#include "nvs.h"
 
 xSemaphoreHandle wifiConnect_semaphore;
 xSemaphoreHandle mqttConnect_semaphore;
@@ -28,9 +29,14 @@ void wifiConnect(void *params)
 
 void registerSystem()
 {
+  char *name = nvs_read_string("name");
   if (xSemaphoreTake(mqttConnect_semaphore, portMAX_DELAY))
   {
-    mqtt_register();
+    if (name == NULL) {
+      mqtt_register();
+    } else {
+      mqtt_register_with(name);
+    }
 
     if (xSemaphoreTake(registerHandler_semaphore, portMAX_DELAY))
     {
@@ -39,18 +45,14 @@ void registerSystem()
 
     xSemaphoreGive(mqttConnect_semaphore);
   }
+  free(name);
 }
 
 void app_main(void)
 {
   DHT11_init(GPIO_NUM_4);
 
-  esp_err_t ret = nvs_flash_init();
-  if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
-    ESP_ERROR_CHECK(nvs_flash_erase());
-    ret = nvs_flash_init();
-  }
-  ESP_ERROR_CHECK(ret);
+  nvs_start();
     
   wifiConnect_semaphore = xSemaphoreCreateBinary();
   mqttConnect_semaphore = xSemaphoreCreateBinary();

@@ -22,6 +22,7 @@
 #include "mqtt.h"
 #include "gpio.h"
 #include "dht11.h"
+#include "nvs.h"
 
 #define TAG "MQTT"
 
@@ -84,6 +85,7 @@ void mqtt_handle_data(int length, char *data)
 
     if (strcmp(type, REGISTER) == 0) {
         strcpy(_name, cJSON_GetObjectItem(body, "name")->valuestring);
+        nvs_save_string("name", _name);
         xSemaphoreGive(registerHandler_semaphore);
     }
     if (strcmp(type, SET_OUTPUT) == 0) {
@@ -150,6 +152,13 @@ void mqtt_send_message(char *topic, char *message)
 {
     int message_id = esp_mqtt_client_publish(client, topic, message, 0, 1, 0);
     ESP_LOGI(TAG, "Mensagem enviada, ID: %d", message_id);
+}
+
+void mqtt_register_with(char *name)
+{
+    strcpy(_name, name);
+    nvs_save_string("name", _name);
+    xSemaphoreGive(registerHandler_semaphore);
 }
 
 void mqtt_register()
