@@ -22,6 +22,11 @@ void nvs_start()
   ESP_ERROR_CHECK(ret);
 }
 
+void nvs_erase()
+{
+  nvs_flash_erase();
+}
+
 char* nvs_read_string(char *key)
 {
   ESP_ERROR_CHECK(nvs_flash_init());

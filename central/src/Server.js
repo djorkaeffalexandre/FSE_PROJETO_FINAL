@@ -48,16 +48,33 @@ class Server {
         this.items[data.mac] = data;
       }
     }
-    if (topic.includes('estado')) {
-      this.connected[data.mac].input = data.input;
-      this.connected[data.mac].output = data.output;
+    if (this.connected[data.mac]) {
+      if (topic.includes('estado')) {
+        this.connected[data.mac].input = data.input;
+        this.connected[data.mac].output = data.output;
+      }
+      if (topic.includes('temperatura')) {
+        this.connected[data.mac].temperature = data.temperature;
+      }
+      if (topic.includes('umidade')) {
+        this.connected[data.mac].humidity = data.humidity;
+      }
     }
-    if (topic.includes('temperatura')) {
-      this.connected[data.mac].temperature = data.temperature;
-    }
-    if (topic.includes('umidade')) {
-      this.connected[data.mac].humidity = data.humidity;
-    }
+
+    this._handleChange();
+  }
+
+  delete = (item) => {
+    this.unsubscribe(item);
+
+    this.client.publish(
+      `fse2020/${ MATRICULA }/dispositivos/${ item.mac }`,
+      JSON.stringify({
+        type: 'UNREGISTER'
+      })
+    );
+
+    delete this.connected[item.mac];
 
     this._handleChange();
   }
@@ -105,6 +122,37 @@ class Server {
         (err) => {
           if (err) {
             console.error('Can\'t subscribe');
+          }
+        }
+      );
+    }
+  }
+
+  unsubscribe = (item) => {
+    this.client.unsubscribe(
+      `fse2020/${ MATRICULA }/${ item.name }/estado`,
+      (err) => {
+        if (err) {
+          console.error('Can\'t unsubscribe');
+        }
+      }
+    );
+
+    if (this.connected[item.mac].type === 'ENERGY') {
+      this.client.unsubscribe(
+        `fse2020/${ MATRICULA }/${ item.name }/temperatura`,
+        (err) => {
+          if (err) {
+            console.error('Can\'t unsubscribe');
+          }
+        }
+      );
+  
+      this.client.unsubscribe(
+        `fse2020/${ MATRICULA }/${ item.name }/umidade`,
+        (err) => {
+          if (err) {
+            console.error('Can\'t unsubscribe');
           }
         }
       );

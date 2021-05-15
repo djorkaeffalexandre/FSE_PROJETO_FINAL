@@ -1,5 +1,7 @@
 import React from 'react';
 
+import IconButton from '@material-ui/core/IconButton';
+import Delete from '@material-ui/icons/Delete';
 import Switch from '@material-ui/core/Switch';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
@@ -14,6 +16,10 @@ const Connected = ({ item }) => {
   const onChange = () => {
     Server.setOutput(item);
   };
+
+  const onDelete = () => {
+    Server.delete(item);
+  }
 
   return (
     <Grid item xs={12} sm={6}>
@@ -40,6 +46,9 @@ const Connected = ({ item }) => {
             />
           </>
         )}
+        <IconButton onClick={onDelete}>
+          <Delete />
+        </IconButton>
       </Paper>
     </Grid>
   );

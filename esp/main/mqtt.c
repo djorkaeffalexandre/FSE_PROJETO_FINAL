@@ -29,6 +29,7 @@
 #define NAME_LEN 30
 
 #define REGISTER "REGISTER"
+#define UNREGISTER "UNREGISTER"
 #define SET_OUTPUT "SET_OUTPUT"
 
 #define PUSH_TICK 2000
@@ -80,7 +81,7 @@ void mqtt_handle_data(int length, char *data)
 {
     /*
     {
-        "type": "REGISTER" | "SET_OUTPUT",
+        "type": "REGISTER" | "SET_OUTPUT" | "UNREGISTER",
         "name": "name"
     }
     */
@@ -92,6 +93,11 @@ void mqtt_handle_data(int length, char *data)
         strcpy(_name, cJSON_GetObjectItem(body, "name")->valuestring);
         nvs_save_string("name", _name);
         xSemaphoreGive(registerHandler_semaphore);
+    }
+
+    if (strcmp(type, UNREGISTER) == 0) {
+        nvs_erase();
+        mqtt_register();
     }
     
     #ifdef CONFIG_ESP_MODEL_TYPE_ENERGY
@@ -246,7 +252,7 @@ void mqtt_publish_dht11(void *params)
         {
             struct dht11_reading dht11 = DHT11_read();
 
-            if (dht11.status == 0)
+            if (_name != NULL && dht11.status == 0)
             {
                 cJSON_AddNumberToObject(temp_data, "temperature", dht11.temperature);
                 cJSON_AddNumberToObject(hum_data, "humidity", dht11.humidity);
