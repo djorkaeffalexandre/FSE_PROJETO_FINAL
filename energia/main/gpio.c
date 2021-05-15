@@ -36,24 +36,24 @@ void handle_interruption(void *params)
   {
     if (xQueueReceive(interruptionQueue, &pin, portMAX_DELAY))
     {
-        int state = gpio_get_level(pin);
+      int state = gpio_get_level(pin);
+      State current = gpio_current_state();
+      current.input = !current.input;
+      gpio_toggle(current);
+      if (state == 1)
+      {
+        gpio_isr_handler_remove(pin);
+        while (gpio_get_level(pin) == state)
+        {
+          vTaskDelay(50 / portTICK_PERIOD_MS);
+        }
         State current = gpio_current_state();
         current.input = !current.input;
         gpio_toggle(current);
-        if (state == 1)
-        {
-          gpio_isr_handler_remove(pin);
-          while (gpio_get_level(pin) == state)
-          {
-            vTaskDelay(50 / portTICK_PERIOD_MS);
-          }
-          State current = gpio_current_state();
-          current.input = !current.input;
-          gpio_toggle(current);
 
-          vTaskDelay(50 / portTICK_PERIOD_MS);
-          gpio_isr_handler_add(pin, gpio_isr_handler, (void *)pin);
-        }
+        vTaskDelay(50 / portTICK_PERIOD_MS);
+        gpio_isr_handler_add(pin, gpio_isr_handler, (void *)pin);
+      }
     }
   }
 }
