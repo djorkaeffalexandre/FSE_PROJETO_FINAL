@@ -38,10 +38,7 @@ class Server {
         console.error('Can\'t subscribe');
       }
     })
-    Object.values(this.connected).forEach(item => this.subscribe({
-      ...item,
-      subscribed: false
-    }));
+    Object.values(this.connected).forEach(item => this.subscribe(item));
   }
 
   _onMessage = (topic, message) => {
@@ -84,10 +81,6 @@ class Server {
   }
 
   subscribe = (item) => {
-    if (this.connected[item.mac].subscribed) {
-      return;
-    }
-
     this.client.subscribe(
       `fse2020/${ MATRICULA }/${ item.name }/estado`,
       (err) => {
@@ -116,8 +109,6 @@ class Server {
         }
       );
     }
-
-    this.connected[item.mac].subscribed = true;
   }
 
   setOutput = (item) => {
