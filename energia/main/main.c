@@ -9,6 +9,7 @@
 
 #include "wifi.h"
 #include "mqtt.h"
+#include "dht11.h"
 
 xSemaphoreHandle wifiConnect_semaphore;
 xSemaphoreHandle mqttConnect_semaphore;
@@ -35,11 +36,15 @@ void registerSystem()
     {
       gpio_start();
     }
+
+    xSemaphoreGive(mqttConnect_semaphore);
   }
 }
 
 void app_main(void)
 {
+  DHT11_init(GPIO_NUM_4);
+
   esp_err_t ret = nvs_flash_init();
   if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
     ESP_ERROR_CHECK(nvs_flash_erase());
@@ -55,4 +60,6 @@ void app_main(void)
   xTaskCreate(&wifiConnect, "Handler of WiFi", 4096, NULL, 1, NULL);
 
   registerSystem();
+
+  xTaskCreate(&mqtt_publish_dht11, "Handler of DHT11", 4096, NULL, 1, NULL);
 }

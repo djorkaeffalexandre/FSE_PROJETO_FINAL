@@ -21,6 +21,7 @@
 
 #include "mqtt.h"
 #include "gpio.h"
+#include "dht11.h"
 
 #define TAG "MQTT"
 
@@ -29,6 +30,8 @@
 
 #define REGISTER "REGISTER"
 #define SET_OUTPUT "SET_OUTPUT"
+
+#define PUSH_TICK 20000
 
 #define STUDENT_ID CONFIG_ESP_STUDENT_ID
 
@@ -59,11 +62,11 @@ char* mac_address()
     return mac;
 }
 
-char *get_state_topic()
+char *get_topic_for(char *option)
 {
     int topic_size = 64;
     char *topic = malloc(topic_size);
-    snprintf(topic, topic_size, "fse2020/%s/%s/estado", STUDENT_ID, _name);
+    snprintf(topic, topic_size, "fse2020/%s/%s/%s", STUDENT_ID, _name, option);
     return topic;
 }
 
@@ -189,10 +192,54 @@ void mqtt_publish_state(State state)
 
     char *json = cJSON_Print(data);
 
-    mqtt_send_message(get_state_topic(), json);
+    char *topic = get_topic_for("estado");
+    mqtt_send_message(topic, json);
+    free(topic);
 }
 
-void mqtt_publish_dht11()
+void mqtt_publish_dht11(void *params)
 {
-    
+    char *temperature_topic = get_topic_for("temperatura");
+    char *humidity_topic = get_topic_for("umidade");
+
+    /*
+    {
+        "temperature": int
+    }
+    */
+    cJSON *temp_data = cJSON_CreateObject();
+    /*
+    {
+        "humidity": int
+    }
+    */
+    cJSON *hum_data = cJSON_CreateObject();
+
+    if (xSemaphoreTake(mqttConnect_semaphore, portMAX_DELAY))
+    {
+        while (1)
+        {
+            struct dht11_reading dht11 = DHT11_read();
+
+            if (dht11.status == 0)
+            {
+                cJSON_AddNumberToObject(temp_data, "temperature", dht11.temperature);
+                cJSON_AddNumberToObject(hum_data, "humidity", dht11.humidity);
+
+                char *temp_json = cJSON_Print(temp_data);
+                char *hum_json = cJSON_Print(hum_data);
+
+                mqtt_send_message(temperature_topic, temp_json);
+                mqtt_send_message(humidity_topic, hum_json);
+
+                cJSON_DeleteItemFromObject(temp_data, "temperature");
+                cJSON_DeleteItemFromObject(hum_data, "humidity");
+            }
+
+            vTaskDelay(PUSH_TICK / portTICK_PERIOD_MS);
+        }
+    }
+
+    free(temperature_topic);
+    free(humidity_topic);
 }
