@@ -24,7 +24,7 @@ void nvs_start()
 
 void nvs_erase()
 {
-  nvs_flash_erase();
+  nvs_save_string("name", "");
 }
 
 char* nvs_read_string(char *key)

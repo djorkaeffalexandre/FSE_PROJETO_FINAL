@@ -97,6 +97,7 @@ void mqtt_handle_data(int length, char *data)
 
     if (strcmp(type, UNREGISTER) == 0) {
         nvs_erase();
+        strcpy(_name, "");
         mqtt_register();
     }
     
@@ -252,7 +253,7 @@ void mqtt_publish_dht11(void *params)
         {
             struct dht11_reading dht11 = DHT11_read();
 
-            if (_name != NULL && dht11.status == 0)
+            if (strlen(_name) != 0 && dht11.status == 0)
             {
                 cJSON_AddNumberToObject(temp_data, "temperature", dht11.temperature);
                 cJSON_AddNumberToObject(hum_data, "humidity", dht11.humidity);

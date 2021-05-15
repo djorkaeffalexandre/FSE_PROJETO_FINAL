@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 #include "nvs_flash.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
@@ -32,7 +33,7 @@ void registerSystem()
   char *name = nvs_read_string("name");
   if (xSemaphoreTake(mqttConnect_semaphore, portMAX_DELAY))
   {
-    if (name == NULL) {
+    if (name == NULL || strlen(name) == 0) {
       mqtt_register();
     } else {
       mqtt_register_with(name);
