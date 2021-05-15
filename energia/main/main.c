@@ -12,6 +12,7 @@
 
 xSemaphoreHandle wifiConnect_semaphore;
 xSemaphoreHandle mqttConnect_semaphore;
+xSemaphoreHandle registerHandler_semaphore;
 
 void wifiConnect(void *params)
 {
@@ -29,6 +30,11 @@ void registerSystem()
   if (xSemaphoreTake(mqttConnect_semaphore, portMAX_DELAY))
   {
     mqtt_register();
+
+    if (xSemaphoreTake(registerHandler_semaphore, portMAX_DELAY))
+    {
+      
+    }
   }
 }
 
@@ -43,6 +49,7 @@ void app_main(void)
     
   wifiConnect_semaphore = xSemaphoreCreateBinary();
   mqttConnect_semaphore = xSemaphoreCreateBinary();
+  registerHandler_semaphore = xSemaphoreCreateBinary();
 
   wifi_start();
   xTaskCreate(&wifiConnect, "Handler of WiFi", 4096, NULL, 1, NULL);
