@@ -9,7 +9,7 @@
 
 #define NAME_LEN 30
 
-#define PARTITION "FSE_2020_2"
+#define PARTITION "NVS_FSE_UNB_2020_2"
 
 void nvs_start()
 {

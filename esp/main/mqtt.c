@@ -225,16 +225,20 @@ void mqtt_publish_dht11(void *params)
 
     /*
     {
+        "mac": "mac_address",
         "temperature": int
     }
     */
     cJSON *temp_data = cJSON_CreateObject();
+    cJSON_AddStringToObject(temp_data, "mac", mac_address());
     /*
     {
+        "mac": "mac_address",
         "humidity": int
     }
     */
     cJSON *hum_data = cJSON_CreateObject();
+    cJSON_AddStringToObject(hum_data, "mac", mac_address());
 
     if (xSemaphoreTake(mqttConnect_semaphore, portMAX_DELAY))
     {
