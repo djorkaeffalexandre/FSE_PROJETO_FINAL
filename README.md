@@ -47,6 +47,12 @@ E executar a construção do projeto, que ficará disponível para acesso no cam
 yarn start
 ```
 
+<h1 align="center">
+  <img alt="WEB APP" src="https://i.imgur.com/84tGddW.png" width="500" height="300" />
+</h1>
+
+✅ Através da aplicação central é possível baixar um `LOG` de registro de todos os eventos realizados pelo usuário em formato `CSV`. ✅
+
 ## 📝 Configuração
 
 Para iniciar a aplicação embarcada, será necessária a inicialização do ambiente de desenvolvimento [ESP-IDF](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/), com ele poderemos configurar, construir e instalar o projeto.

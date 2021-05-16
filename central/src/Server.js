@@ -50,6 +50,13 @@ class Server {
     }
     if (this.connected[data.mac]) {
       if (topic.includes('estado')) {
+        if (this.connected[data.mac].input !== data.input) {
+          this._handleLog(`esp-${ data.mac }`, 'UPDATE-INPUT');
+        }
+        if (this.connected[data.mac].output !== data.output) {
+          this._handleLog(`esp-${ data.mac }`, 'UPDATE-OUTPUT');
+        }
+
         this.connected[data.mac].input = data.input;
         this.connected[data.mac].output = data.output;
       }
@@ -77,6 +84,7 @@ class Server {
     delete this.connected[item.mac];
 
     this._handleChange();
+    this._handleLog(`esp-${ item.mac }`, 'DELETE');
   }
 
   register = (item) => {
@@ -95,6 +103,7 @@ class Server {
     delete this.items[item.mac];
 
     this._handleChange();
+    this._handleLog(`esp-${ item.mac }`, 'REGISTER');
   }
 
   subscribe = (item) => {
@@ -168,6 +177,15 @@ class Server {
     );
 
     this._handleChange();
+    this._handleLog(`esp-${ item.mac }`, 'SET_OUTPUT');
+  }
+  
+  _handleLog = (item, action) => {
+    const old = JSON.parse(localStorage.getItem('log') ?? '["item", "action"]');
+    old.push(item);
+    old.push(action);
+    localStorage.setItem('log', JSON.stringify(old));
+    this.handleLog?.(JSON.stringify(old.join(',')));
   }
   
 }

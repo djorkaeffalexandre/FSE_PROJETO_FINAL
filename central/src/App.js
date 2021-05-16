@@ -4,6 +4,8 @@ import './App.css';
 import Grid from '@material-ui/core/Grid';
 import Switch from '@material-ui/core/Switch';
 
+import { CSVLink } from 'react-csv';
+
 import Server from './Server';
 import Unconnected from './Unconnected';
 import Connected from './Connected';
@@ -21,13 +23,18 @@ const App = () => {
   const [alarm, setAlarm] = React.useState(false);
   const [connected, setConnected] = React.useState([]);
   const [unconnected, setUnconnected] = React.useState([]);
+  const [log, setLog] = React.useState('');
 
   useEffect(() => {
     Server.handleConnection = setUnconnected;
     Server.handleConnected = setConnected;
-
+    Server.handleLog = setLog;
     Server._handleChange();
   }, []);
+
+  useEffect(() => {
+    Server._handleLog('alarm', alarm ? 'ON' : 'OFF');
+  }, [alarm]);
 
   useEffect(() => {
     if (play && alarm) {
@@ -53,6 +60,7 @@ const App = () => {
   return (
     <div className={classes.root}>
       <div style={{ marginLeft: 40, marginTop: 20 }}>
+        <CSVLink data={log}>Download LOG (CSV)</CSVLink>
         <p>Alarme:</p>
         <Switch
           checked={alarm}
