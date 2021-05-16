@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img alt="FSE" src="https://i.imgur.com/OuR6GgO.png" width="300" height="300" />
+  <img alt="FSE" src="https://i.imgur.com/3Q8FJri.jpg" width="500" height="300" />
   <br>
   FSE
 </h1>
@@ -54,11 +54,11 @@ idf.py menuconfig
 A configuração do WiFi pode ser feita através do menu `Wifi Configuration`.
 
 <h1 align="center">
-  <img alt="Wifi Configuration" src="https://i.imgur.com/1KCyZJq.png" width="300" height="300" />
+  <img alt="Wifi Configuration" src="https://i.imgur.com/1KCyZJq.png" width="500" height="300" />
 </h1>
 
 <h1 align="center">
-  <img alt="Wifi Configuration" src="https://i.imgur.com/4hpQbSS.png" width="300" height="300" />
+  <img alt="Wifi Configuration" src="https://i.imgur.com/4hpQbSS.png" width="500" height="300" />
 </h1>
 
 Deverá ser realizada também a configuração das variáveis do projeto utilizadas para comunicação e utilização ou não de sensores a depender do modelo de alimentação utilizado.
@@ -68,11 +68,11 @@ Utilizando o menu `FSE Configuration` é possível selecionar o modelo de alimen
 :warning: Deverá ser utilizada a matrícula 160026822 para conexão com o projeto `central`, ou alterar a configuração padrão da aplicação cliente no [sistema de serviço](https://github.com/djorkaeffalexandre/FSE_PROJETO_FINAL/blob/main/central/src/Server.js#L3). :warning:
 
 <h1 align="center">
-  <img alt="FSE Configuration" src="https://i.imgur.com/xn14lpS.png" width="300" height="300" />
+  <img alt="FSE Configuration" src="https://i.imgur.com/xn14lpS.png" width="500" height="300" />
 </h1>
 
 <h1 align="center">
-  <img alt="FSE Configuration" src="https://i.imgur.com/vvXfUFN.png" width="300" height="300" />
+  <img alt="FSE Configuration" src="https://i.imgur.com/vvXfUFN.png" width="500" height="300" />
 </h1>
 
 Após as configurações, para construir o projeto deverá ser utilizado o comando padrão de construção da [ESP-IDF](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/).
