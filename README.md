@@ -8,6 +8,11 @@
 
 Projeto Final da matéria de Fundamentos de Sistemas Embarcados.
 
+| Aluno(a) | Matricula |
+| :--: | :--: |
+| Djorkaeff Alexandre Vilela Pereira | 16/0026822 |
+| Guilherme Siqueira Brandão | 16/0007763 |
+
 ## 🎥 Visão Geral
 
 Assista o vídeo de explicação sobre o projeto no [Youtube](https://youtu.be/_CUdlJEPX1c).
